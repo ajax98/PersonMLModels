@@ -1,9 +1,9 @@
-#Person Classification
+# Person Classification
 
 To train the following models for person classification run :
 `python3 ModelTrainer.py`
 
-#Requirements
+## Requirements
 The code was run using: 
 1. Python3
 2. Tensorflow 2.2
