@@ -1,7 +1,11 @@
 # Person Classification
 
 To train the following models for person classification run :
-`python3 ModelTrainer.py`
+`python3 ModelTrainer.py [-h] epochs image_width image_height batch_size checkpoint_path`
+
+i.e.
+
+`python3 ModelTrainer.py 90 96 96 32 ./checkpoint_path`
 
 ## Requirements
 The code was run using: 

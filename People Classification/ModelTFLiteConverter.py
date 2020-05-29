@@ -45,8 +45,6 @@ model.load_weights(args.checkpoint)
 
 #model inputs change if dimensions change
 x = np.random.random((1,args.image_height,args.image_width,1))
-print("X: ", x)
-print("Input shape: ", x.shape)
 model._set_inputs(x)
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
