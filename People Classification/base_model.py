@@ -38,7 +38,7 @@ class ConvDP(tf.keras.layers.Layer):
 
 class MobileNetLite(tf.keras.Model):
 
-  def __init__(self):
+  def __init__(self, image_height):
     super(MobileNetLite, self).__init__()
 
     self.layer1 = ConvBn(8, (2,2))
@@ -55,7 +55,11 @@ class MobileNetLite(tf.keras.Model):
     self.layer12 = ConvDP(128, (1,1))
     self.layer13 = ConvDP(256, (2,2))
     self.layer14 = ConvDP(256, (1,1))
-    self.layer15 = keras.layers.AveragePooling2D(pool_size=(2,2))
+    #Temporary fix, need to find a better solution
+    if(image_height == 48):
+        self.layer15 = keras.layers.AveragePooling2D(pool_size=(1,1))
+    else:
+        self.layer15 = keras.layers.AveragePooling2D(pool_size=(2,2))
     self.layer16 = keras.layers.Flatten()
     self.layer17 = keras.layers.Dense(2)
 

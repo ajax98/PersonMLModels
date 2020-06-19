@@ -6,7 +6,7 @@ from data_loader_coco import DataLoader
 import numpy as np
 
 #Model importing, change when modifying model
-from tflite_replica4 import MobileNetLite
+from base_model import MobileNetLite
 
 
 parser = argparse.ArgumentParser()
@@ -40,7 +40,7 @@ print("X batch shape: ", X_batch.shape)
 print("y batch shape: ", y_batch.shape)
 
 
-model = MobileNetLite()
+model = MobileNetLite(args.image_height)
 model.load_weights(args.checkpoint)
 
 #model inputs change if dimensions change
@@ -53,7 +53,7 @@ converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 converter.inference_input_type = tf.uint8
 converter.inference_output_type = tf.uint8
 converter.inference_type = tf.uint8
-converter.experimental_new_converter=False
+# converter.experimental_new_converter=False
 quantized_model = converter.convert()
 open(args.output_name, "wb").write(quantized_model)
 

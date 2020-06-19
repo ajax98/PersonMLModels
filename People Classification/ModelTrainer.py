@@ -10,25 +10,34 @@ import glob
 import datetime
 import argparse
 
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("epochs", help="Number of epochs", type=int)
 parser.add_argument("image_width", help=" Input Image width", type=int)
 parser.add_argument("image_height", help="Input Image height", type=int)
 parser.add_argument("batch_size", help="Input Batch Size", type=int)
 parser.add_argument("checkpoint_path", help="Checkpoint path to save to ", type=str)
-
+parser.add_argument("--startpoint", help="Load previously trained weights to speed up training", default=True)
 args = parser.parse_args()
 
 #Variables epochs, checkpoint directory, size of images, 
 
 # Create an instance of the model
-model = MobileNetLite()
+model = MobileNetLite(args.image_height)
+if(args.startpoint == True):
+  model.load_weights('./startpoint.ckpt')
+
+
+
 
 #Define loss for training
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 #Set optimizer 
 optimizer = tf.keras.optimizers.Adam(learning_rate=.045, beta_1=.98)
+# optimizer = tf.keras.optimizers.Adam(learning_rate=.1, beta_1=.98)
+
 
 #Create metrics for train and test loss and accuracies
 train_loss = tf.keras.metrics.Mean(name='train_loss')
@@ -43,17 +52,19 @@ data = DataLoader(args.batch_size, image_width=args.image_width, image_height=ar
 train_loader = data.generate_batch('train')
 validation_loader = data.generate_batch('val')
 
-
 @tf.function
 def train_step(images, labels):
   with tf.GradientTape() as tape:
     predictions = model(images, training=True)
     loss = loss_object(labels, predictions)
   gradients = tape.gradient(loss, model.trainable_variables)
+  # tf.print("Gradients: ", gradients)
   optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
   train_loss(loss)
   train_accuracy(labels, predictions)
+  # tf.print("Train Loss: ", train_loss.result())
+  # tf.print("Train Accuracy: ", train_accuracy.result()*100)
 
 
 @tf.function
@@ -64,6 +75,7 @@ def test_step(images, labels):
 
   test_loss(t_loss)
   test_accuracy(labels, predictions)
+
 
 
 EPOCHS = args.epochs
